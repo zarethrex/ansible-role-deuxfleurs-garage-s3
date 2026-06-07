@@ -1,0 +1,13 @@
+---
+- name: Restart Garage S3
+  become_user: "{{ install_user }}"
+  become: true
+  ansible.builtin.systemd_service:
+    name: garage
+    scope: >-
+      {{
+        'system' if garage_install_all_users else 'user'
+      }}
+    state: restarted
+    enabled: true
+    daemon_reload: true

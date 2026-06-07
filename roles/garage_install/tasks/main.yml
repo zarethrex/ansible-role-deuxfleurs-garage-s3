@@ -1,0 +1,34 @@
+---
+- name: Get System Info
+  ansible.builtin.setup:
+    filter:
+      - architecture
+      - env
+- name: Set Install Variables
+  ansible.builtin.set_fact:
+    install_location: >-
+      {{
+        '/usr/local/bin/garage' if garage_install_all_users
+        else ansible_facts.env.HOME ~ '/.local/bin'
+      }}
+    install_user: >-
+      {{
+        ansible_user if not garage_install_all_users
+        else 'root'
+      }}
+    config_file: >-
+      {{
+        '/etc/garage.toml' if garage_install_all_users
+        else (ansible_facts.env.HOME ~ '/.garage.toml')
+      }}
+    service_file: >-
+      {{
+        '/etc/systemd/system/garage.service' if garage_install_all_users
+        else (ansible_facts.env.HOME ~ '/.config/systemd/user/garage.service')
+      }}
+- name: Install Binary
+  ansible.builtin.include_tasks:
+    file: install.yml
+- name: Configure Garage
+  ansible.builtin.include_tasks:
+    file: configure.yml

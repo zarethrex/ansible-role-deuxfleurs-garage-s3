@@ -1,0 +1,284 @@
+---
+argument_specs:
+  main:
+    options:
+      garage_install_all_users:
+        type: bool
+        required: false
+        default: false
+        description: Install for current user or all users
+      garage_install_version:
+        type: str
+        required: false
+        default: 2.3.0
+        description: Set Garage version
+      garage_install_configuration:
+        type: dict
+        description: Configure the Garage application
+        options:
+          metadata_dir:
+            default: /var/lib/garage/meta
+            description: Location for program metadata
+            type: str
+            required: false
+          metadata_snapshots_dir:
+            description: Location for program metadata snapshots
+            type: str
+            required: false
+          data_dir:
+            default: /var/lib/garage/data
+            description: Location for program data
+            type: str
+            required: false
+          db_engine:
+            type: str
+            choices:
+              - lmdb
+              - sqlite
+              - fjall
+              - sled
+            description: Storage backend for install
+            default: lmdb
+            required: false
+          consistency_mode:
+            type: str
+            required: false
+            choices:
+              - consistent
+              - degraded
+              - dangerous
+            description: The consistency setting for read/write behaviour
+          replication_factor:
+            type: int
+            required: false
+            default: 1
+            description: Duplication of content across nodes
+          metadata_fsync:
+            type: bool
+            default: false
+            required: false
+            description: Whether to enable synchronous mode for the database engine
+          data_fsync:
+            type: bool
+            default: false
+            required: false
+            description: Whether to synchronise data blocks and the containing directory on disk
+          metadata_auto_snapshot_interval:
+            type: str
+            required: false
+            description: Snapshaot metadata database file at an interval
+          disable_scrub:
+            type: bool
+            default: false
+            description: Disable 'scrubbing' of data directories checking for corruption
+            required: false
+          use_local_tz:
+            type: bool
+            default: false
+            required: false
+            description: Run lifecycle worker every day at midnight local time as opposed to UTC
+          block_size:
+            type: str
+            default: "1MiB"
+            description: Size of blocks for object storage
+            required: false
+          block_ram_buffer_max:
+            type: str
+            description: limit on total size of data blocks kept in RAM
+            required: false
+          block_max_concurrent_reads:
+            type: int
+            description: maximum number of blocks open simultaneously for reading
+            required: false
+          block_max_concurrent_writes_per_request:
+            type: int
+            description: Maximum number of parallel block writes per put request
+            required: false
+          lmdb_map_size:
+            type: str
+            description: Map size of LMDB if used as storage
+            required: false
+          compression_level:
+            type: int
+            default: 1
+            required: false
+            description: Zstd compression level for storing blocks
+          rpc_secret:
+            type: str
+            description: Unique identification key for nodes to communicate (alternative to rpc_secret_file)
+            required: false
+          rpc_secret_file:
+            type: str
+            description: File with unique identification key for nodes to communicate (alternative to rpc_secret)
+            required: false
+          rpc_bind_addr:
+            type: str
+            description: Address and port on which to bind inter-cluster communications
+            required: "[::]:3901"
+          rpc_bind_outgoing:
+            type: bool
+            required: false
+            description: pre-bind all sockets for outgoing connections to the same IP Address
+          rpc_public_addr:
+            type: str
+            description: Address and port that other nodes use to contect this node for RPC calls
+            required: false
+          rpc_public_add_subnet:
+            type: str
+            required: false
+            description: When rpc_public_addr not set but autodiscovery used, allows filtering by subnet
+          bootstrap_peers:
+            type: list
+            elements: str
+            required: false
+            description: List of peer identifiers on which to contact Garage peers in cluster
+          allow_world_readable_secrets:
+            type: bool
+            required: false
+            default: false
+            description: Disable checks by Garage for world readable secrets in files
+          allow_punycode:
+            type: bool
+            required: false
+            default: false
+            description: Allow creating buckets with names containing punycode
+          consul_discovery:
+            type: dict
+            description: Discover nodes using Consul
+            required: false
+            options:
+              consul_http_addr:
+                type: str
+                required: true
+                description: Full HTTP(S) address of Consul server
+              api:
+                type: str
+                description: Service registration API
+                choices:
+                  - catalog
+                  - agent
+                required: true
+              service_name:
+                type: str
+                required: true
+                description: service name under which Garage RPC ports are announced
+              client_cert:
+                type: str
+                required: false
+                description: TLS client certificate needed for 'catalog' API
+              client_key:
+                type: str
+                required: false
+                description: TLS client key needed for 'catalog' API
+              tls_skip_verify:
+                type: bool
+                default: false
+                required: false
+                description: Whether to skip TLS verification
+              token:
+                type: str
+                required: true
+                description: Token with which to communicate with Consul
+              datacenters:
+                required: false
+                type: list
+                elements: str
+                description: List of data centers on which Garage can perform service discovery
+              tags:
+                required: false
+                type: list
+                elements: str
+                description: Add tags to service registration
+              meta:
+                required: false
+                type: dict
+                description: Add metadata to service registration
+          kubernetes_discovery:
+            type: dict
+            description: Discover nodes using K8s
+            options:
+              namespace:
+                type: str
+                required: true
+                description: Namespace on which resources are configured
+              service_name:
+                type: str
+                required: true
+                description: Label added to advertised resources to filter them
+              skip_crd:
+                required: false
+                type: bool
+                default: false
+                description: Disable automatic creation and patching of CRD
+          s3_api:
+            type: dict
+            required: true
+            description: S3 API configuration
+            options:
+              api_bind_addr:
+                required: false
+                type: str
+                default: "[::]:3900"
+                description: The IP and port on which to bind S3 API calls
+              s3_region:
+                required: false
+                type: str
+                default: garage
+                description: Name for the S3 region defined by this setup
+              root_domain:
+                type: str
+                required: false
+                description: Optional suffix for accessing buckets in vhost-style
+                default: ".s3.garage"
+          s3_web:
+            type: dict
+            description: Publish content of buckets as websites
+            required: false
+            options:
+              bind_addr:
+                type: str
+                required: false
+                description: The IP and port on which to bind HTTP requests to buckets for websites
+                default: "[::]:3902"
+              root_domain:
+                type: str
+                required: false
+                description: Optional suffix for bucket names corresponding to HTTP host
+                default: ".web.garage"
+              add_host_to_metrics:
+                type: bool
+                required: false
+                default: false
+                description: Whether to include requested domain name in prometheus metrics of web endpoints
+          admin:
+            type: dict
+            description: Administration capability settings
+            options:
+              api_bind_addr:
+                required: false
+                description: Bind HTTP server to port and address for listening to admin feature requests
+                type: str
+              admin_token:
+                required: false
+                description: Token for accessing admin features (alternative of admin_token_file)
+                type: str
+              admin_token_file:
+                required: false
+                description: File with token for accessing admin features (alternative of admin_token)
+                type: str
+              metrics_token:
+                required: false
+                description: Token for accessing metrics features (alternative of metrics_token_file)
+                type: str
+              metrics_token_file:
+                required: false
+                description: File with token for accessing metrics features (alternative of metrics_token)
+                type: str
+              metrics_require_token:
+                required: false
+                type: bool
+                description: Whether accessing metrics always requires a token
+              trace_sink:
+                type: bool
+                required: false
+                description: Specify address of an OpenTelemetry collector for traces

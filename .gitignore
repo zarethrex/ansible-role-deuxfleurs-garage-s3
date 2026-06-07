@@ -1,0 +1,6 @@
+__pycache__/
+.venv/
+.vagrant/
+.ruby-lsp/
+.ansible/
+.envrc

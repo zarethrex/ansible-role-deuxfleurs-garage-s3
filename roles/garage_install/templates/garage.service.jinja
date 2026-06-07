@@ -1,0 +1,15 @@
+[Unit]
+Description=Garage S3 Object Store 
+After=network-target.target
+
+[Service]
+Type=simple
+
+ExecStart={{ install_location }}/garage -c {{ config_file }} server
+
+# Restart configuration
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

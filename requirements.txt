@@ -1,0 +1,4 @@
+ansible>=14.0
+ansible-core>=2.21
+requests>=2.34
+git+https://git.deuxfleurs.fr/garage-sdk/garage-admin-sdk-pythonminio==7.2.20

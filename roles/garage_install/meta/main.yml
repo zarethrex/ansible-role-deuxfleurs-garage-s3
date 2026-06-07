@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: garage_install
+  namespace: deuxfleurs_garage
+  author: Kristian Zarebski
+  description: Install Deuxfleurs Garage S3 service
+  license: MIT
+  min_ansible_version: "2.2"
+  galaxy_tags:
+    - s3
+    - garage
+dependencies: []

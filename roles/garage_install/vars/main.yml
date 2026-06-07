@@ -1,0 +1,25 @@
+---
+garage_install_download_template_amd64: >-
+  {{
+    'https://garagehq.deuxfleurs.fr/_releases/v' ~
+    garage_install_version ~
+    '/x86_64-unknown-linux-musl/garage'
+  }}
+garage_install_download_template_i386: >-
+  {{
+    'https://garagehq.deuxfleurs.fr/_releases/v' ~
+    garage_install_version ~
+    '/i686-unknown-linux-musl/garage'
+  }}
+garage_install_download_template_arm64: >-
+  {{
+    'https://garagehq.deuxfleurs.fr/_releases/v' ~
+    garage_install_version ~
+    '/aarch64-unknown-linux-musl/garage'
+  }}
+garage_install_download_template_arm32: >-
+  {{
+    'https://garagehq.deuxfleurs.fr/_releases/v' ~
+    garage_install_version ~
+    '/armv6l-unknown-linux-musleabihf/garage'
+  }}

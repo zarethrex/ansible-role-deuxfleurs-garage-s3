@@ -1,0 +1,34 @@
+---
+- name: Determine Garage Download Link
+  ansible.builtin.set_fact:
+    garage_install_link: >-
+      {%- if ansible_facts.architecture in ('x86_64', 'amd64') -%}
+        {{ garage_install_download_template_amd64 }}
+      {%- elif ansible_facts.architecture in ('i386', 'i686') -%}
+        {{ garage_install_download_template_i386 }}
+      {%- elif ansible_facts.architecture in ('aarch64', 'arm64') -%}
+        {{ garage_install_download_template_arm64 }}
+      {%- elif ansible_facts.architecture in ('armv7l', 'armv6l') -%}
+        {{ garage_install_download_template_arm32 }}
+      {%- endif -%}
+- name: Raise Error if unknown systemA
+  ansible.builtin.assert:
+    that: garage_install_link is defined
+    fail_msg: "Unrecognised system architecture '{{ ansible_facts.architecture }}'"
+- name: Download and Install Garage
+  block:
+    - name: Ensure Download Location Exists
+      when: install_user == ansible_user
+      ansible.builtin.file:
+        path: "{{ install_location }}"
+        state: directory
+        mode: "0755"
+        owner: "{{ ansible_user }}"
+    - name: Download Executable
+      become: true
+      become_user: "{{ install_user }}"
+      ansible.builtin.get_url:
+        url: "{{ garage_install_link }}"
+        dest: "{{ install_location }}/garage"
+        mode: "0755"
+        owner: "{{ install_user }}"

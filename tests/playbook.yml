@@ -1,0 +1,6 @@
+---
+- name: Install Deuxfleurs Garage S3
+  hosts: all
+  gather_facts: false
+  roles:
+    - garage_install
