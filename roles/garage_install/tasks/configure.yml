@@ -1,4 +1,30 @@
 ---
+- name: Define Configuration Variables
+  ansible.builtin.set_fact:
+    config_file: >-
+      {{
+        '/etc/garage.toml' if garage_install_all_users
+        else (ansible_facts.env.HOME ~ '/.garage.toml')
+      }}
+    metadata_dir: >-
+      {{
+        garage_install_root_metadata_dir if garage_install_all_users
+        else (ansible_facts.env.HOME ~ '/.garage/meta')
+      }}
+    data_dir: >-
+      {{
+        garage_install_root_data_dir if garage_install_all_users
+        else (ansible_facts.env.HOME ~ '/.garage/data')
+      }}
+- name: Ensure Data Directories Exist
+  ansible.builtin.file:
+    state: directory
+    owner: "{{ install_user }}"
+    mode: "0755"
+    path: "{{ item }}"
+  loop:
+    - "{{ metadata_dir }}"
+    - "{{ data_dir }}"
 - name: Create Garage Configuration
   ansible.builtin.template:
     src: garage.toml.jinja
@@ -7,18 +33,3 @@
     owner: "{{ install_user }}"
   notify:
     - Restart Garage S3
-- name: Create Service
-  block:
-    - name: Ensure Service File Directory exists
-      when: not garage_install_all_users
-      ansible.builtin.file:
-        path: "{{ ansible_facts.env.HOME }}/.config/systemd/user"
-        mode: "0755"
-        state: directory
-    - name: Generate Service File
-      ansible.builtin.template:
-        dest: "{{ service_file }}"
-        mode: "0644"
-        src: garage.service.jinja
-      notify:
-        - Restart Garage S3

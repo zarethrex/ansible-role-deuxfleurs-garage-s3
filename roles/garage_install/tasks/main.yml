@@ -16,11 +16,6 @@
         ansible_user if not garage_install_all_users
         else 'root'
       }}
-    config_file: >-
-      {{
-        '/etc/garage.toml' if garage_install_all_users
-        else (ansible_facts.env.HOME ~ '/.garage.toml')
-      }}
     service_file: >-
       {{
         '/etc/systemd/system/garage.service' if garage_install_all_users
@@ -32,3 +27,6 @@
 - name: Configure Garage
   ansible.builtin.include_tasks:
     file: configure.yml
+- name: Create Service
+  ansible.builtin.include_tasks:
+    file: service.yml

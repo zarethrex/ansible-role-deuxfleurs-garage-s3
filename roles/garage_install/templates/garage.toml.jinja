@@ -1,5 +1,5 @@
-metadata_dir = "{{ garage_install_configuration.metadata_dir }}"
-data_dir = "{{ garage_install_configuration.data_dir }}"
+metadata_dir = "{{ metadata_dir }}"
+data_dir = "{{ data_dir }}"
 db_engine = "{{ garage_install_configuration.db_engine }}"
 replication_factor = {{ garage_install_configuration.replication_factor }}
 
@@ -51,9 +51,6 @@ compression_level = {{ garage_install_configuration.compression_level }}
 {% endif %}
 {% if garage_install_configuration.rpc_bind_outgoing is defined %}
 rpc_bind_outgoing = {{ garage_install_configuration.rpc_bind_outgoing | string | lower }}
-{% endif %}
-{% if garage_install_configuration.rpc_public_addr is defined %}
-rpc_public_addr = "{{ garage_install_configuration.rpc_public_addr }}"
 {% endif %}
 {% if garage_install_configuration.rpc_public_add_subnet is defined %}
 rpc_public_add_subnet = "{{ garage_install_configuration.rpc_public_add_subnet }}"
@@ -138,7 +135,7 @@ bind_addr = "{{ s3_web.bind_addr | default('[::]:3902') }}"
 {% if s3_web.root_domain is defined %}
 root_domain = "{{ s3_web.root_domain }}"
 {% endif %}
-add_host_to_metrics = "{{ s3_web.add_host_to_metrics | default(false) }}"
+add_host_to_metrics = {{ s3_web.add_host_to_metrics | default(false) | string | lower }}
 
 {% if garage_install_configuration.admin is defined %}
 {% set admin = garage_install_configuration.admin %}
